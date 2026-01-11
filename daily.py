@@ -25,12 +25,13 @@ def apply_penalty():
     res = requests.post(query_url, json=payload, headers=headers)
     data = res.json()
 
-    if not data['results']:
-        print("❌ 현황판 데이터를 찾을 수 없습니다.")
+    try:
+        page_id = data['results'][0]['id']
+        current_stack = data['results'][0]['properties']['스택']['number'] or 0
+    except (KeyError, IndexError) as e:
+        print(f"❌ 데이터를 찾을 수 없습니다: {e}")
+        print(f"응답 내용: {data}")
         return
-
-    page_id = data['results'][0]['id']
-    current_stack = data['results'][0]['properties']['스택']['number'] or 0
     
     # 2. 스택 -1 차감
     new_stack = current_stack - 1
